@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Pokemon struct {
-	ID     string `json:"id"`
+	ID     int    `json:"id"`
 	Name   string `json:"name"`
 	Type   string `json:"type"`
 	Status bool   `json:"status"`
@@ -43,7 +44,14 @@ func getPokemons(context *gin.Context) {
 func getPokemonById(context *gin.Context) {
 	id, ok := context.Params.Get("id")
 	if !ok {
-		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Missing id query parameter."})
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Missing id parameter."})
+		return
+	}
+
+	int_id, error := strconv.Atoi(id)
+
+	if error != nil {
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Provided id is not valid."})
 		return
 	}
 
@@ -55,7 +63,7 @@ func getPokemonById(context *gin.Context) {
 	}
 
 	for _, pokemon := range pokemons {
-		if pokemon.ID == id {
+		if pokemon.ID == int_id {
 			context.IndentedJSON(http.StatusOK, pokemon)
 			return
 		}
@@ -81,8 +89,12 @@ func getCsvData() ([]Pokemon, error) {
 
 	for i, line := range data {
 		if i > 0 {
+			poke_id, err := strconv.Atoi(line[0])
+			if err != nil {
+				return nil, errors.New("all IDs on pokemon database must be Integers")
+			}
 			pokemons = append(pokemons, Pokemon{
-				ID:     line[0],
+				ID:     poke_id,
 				Name:   line[1],
 				Type:   line[2],
 				Status: line[3] != "0",
