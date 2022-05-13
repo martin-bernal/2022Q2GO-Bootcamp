@@ -25,6 +25,7 @@ func main() {
 	})
 
 	router.GET("/pokemon", getPokemons)
+	router.GET("/pokemon/:id", getPokemonById)
 
 	router.Run("localhost:8000")
 }
@@ -37,6 +38,31 @@ func getPokemons(context *gin.Context) {
 		return
 	}
 	context.IndentedJSON(http.StatusOK, pokemons)
+}
+
+func getPokemonById(context *gin.Context) {
+	id, ok := context.Params.Get("id")
+	if !ok {
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Missing id query parameter."})
+		return
+	}
+
+	pokemons, err := getCsvData()
+	if err != nil {
+		fmt.Printf("Error: %T %v \n", err, err)
+		context.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	for _, pokemon := range pokemons {
+		if pokemon.ID == id {
+			context.IndentedJSON(http.StatusOK, pokemon)
+			return
+		}
+	}
+
+	context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Pokemon not found."})
+
 }
 
 func getCsvData() ([]Pokemon, error) {
