@@ -9,21 +9,25 @@ import (
 	"strconv"
 )
 
+// PokemonRepo the contract for the repository
 type PokemonRepo interface {
-	//Reads pokemons from the csv file
+	// ReadPokemons Reads pokemons from the csv file
 	ReadPokemons() ([]entity.Pokemon, error)
-
+	// WritePokemon writes the entity to the csv file
 	WritePokemon(poke *entity.Pokemon) error
 }
 
+// pokemonRepo the pokemon repo implementation struct
 type pokemonRepo struct {
 	filepath string
 }
 
+// NewPokemonRepo Returns the initialized struct
 func NewPokemonRepo(filepath string) PokemonRepo {
 	return &pokemonRepo{filepath}
 }
 
+// ReadPokemons Reads pokemons from the csv file
 func (pr *pokemonRepo) ReadPokemons() ([]entity.Pokemon, error) {
 	log.Println("Enters to Repo/ReadPokemons function")
 
@@ -74,6 +78,7 @@ func (pr *pokemonRepo) ReadPokemons() ([]entity.Pokemon, error) {
 	return pokemons, nil
 }
 
+// WritePokemon writes the entity to the csv file
 func (pr *pokemonRepo) WritePokemon(poke *entity.Pokemon) error {
 	f, err := os.OpenFile(pr.filepath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
