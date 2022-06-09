@@ -21,8 +21,11 @@ type client struct {
 	restClient *http.Client
 }
 
+// Client Pokemon client contract
 type Client interface {
+	// GetPokemonFromApi Creates the request to be executed
 	GetPokemonFromApi(pokemonName string) (*entity.Pokemon, error)
+	// getPokemonRequest executed the create request
 	getPokemonRequest(endpoint string, resource string) (response *Response, err error)
 }
 
@@ -33,6 +36,7 @@ type Response struct {
 	BaseExperience int64  `json:"base_experience"`
 }
 
+// NewPokemonClient initialize the pokemon client struct
 func NewPokemonClient(endpoint string) (Client, error) {
 	c := &client{
 		endpoint: endpoint,

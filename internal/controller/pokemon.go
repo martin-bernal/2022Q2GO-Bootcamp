@@ -9,17 +9,24 @@ import (
 	"github.com/martin-bernal/go-bootcamp-project/internal/service"
 )
 
+// PokemonController contract
 type PokemonController interface {
+	// CreatePokemon Handles the http request and create a new pokemon
 	CreatePokemon(c *gin.Context)
+	// FindPokemon Handles the http request to find a pokemon with the given id param
 	FindPokemon(c *gin.Context)
+	// GetPokemons Handles the http request to get all pokemons
 	GetPokemons(c *gin.Context)
+	// GetPokemonsAsync Handles the http request to get all pokemons using concurrency
 	GetPokemonsAsync(c *gin.Context)
 }
 
+// pokemonController the pokemon controller implementation struct
 type pokemonController struct {
 	pokeService service.PokemonService
 }
 
+// NewPokemonController returns the pokemon controller interface
 func NewPokemonController(pokeService service.PokemonService) PokemonController {
 	return &pokemonController{pokeService}
 }

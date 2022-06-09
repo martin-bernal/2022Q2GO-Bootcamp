@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"github.com/martin-bernal/go-bootcamp-project/internal/helper"
 	"github.com/martin-bernal/go-bootcamp-project/internal/interfaces"
 	"strconv"
 	"sync"
@@ -23,11 +22,15 @@ type PokemonService interface {
 	GetPokemonsAsync(typeParam string, items int, itemsPerWorkers int) ([]*entity.Pokemon, error)
 }
 
+// pokemonService add the necesary fields for this file,
+// repo reffers to the Pokemonrepository the file uses
+// pokemonClient reffers to the Pokemon Client the file uses
 type pokemonService struct {
 	repo          repository.PokemonRepo
 	pokemonClient interfaces.Client
 }
 
+// pokeTask struct to save relevant info of jobs sended to the worker pool
 type pokeTask struct {
 	Pokemon *entity.Pokemon
 	TypeID  string
@@ -38,6 +41,7 @@ func (t pokeTask) Run() {
 	t.TaskRun(t.Pokemon, t.TypeID)
 }
 
+// NewPokemonService returns the service interface
 func NewPokemonService(repo repository.PokemonRepo, pokeClient interfaces.Client) PokemonService {
 	return &pokemonService{repo: repo, pokemonClient: pokeClient}
 }
@@ -99,7 +103,7 @@ func (ps *pokemonService) GetPokemonsAsync(typeParam string, items int, itemsPer
 		return nil, err
 	}
 
-	pool := helper.NewGoroutinePool(3, itemsPerWorkers)
+	pool := NewGoroutinePool(3, itemsPerWorkers)
 
 	var res []*entity.Pokemon
 
